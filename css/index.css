@@ -1,0 +1,298 @@
+:root {
+    --white-text-color: #FFFFFF;
+    --button-background-color: #4B4B4B;
+    --input-background-color: #2E2E2F;
+    --body-background-color: #121212;
+    --font-family: "Inter", sans-serif;
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--white-text-color);
+    font-family: var(--font-family);
+    background-color: var(--body-background-color);
+    height: 100vh;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 1em;
+}
+
+a {
+    color: var(--white-text-color);
+}
+
+/* main, main .container {
+    height: 100%;
+}
+
+main .container {
+    display: flex;
+    flex-direction: column;
+} */
+
+/* Typography styles - Start */
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.fa-solid {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.watchlist-link {
+    font-weight: 700;
+}
+
+.rating, .movie-info,
+.add-movie, .remove-movie {
+    font-size: 0.75rem;
+}
+
+/* Typography styles - End */
+
+/* Header styles - Start */
+
+.hero {
+    background-image: url("../images/header.png");
+    background-size: cover;
+    background-position: 50% 24%;
+    background-size: 100%;
+    min-height: 208px;
+    /* To make the container inside this full height */
+    display: flex;
+    background-color: rgb(90, 87, 87);
+    background-blend-mode: darken;
+}
+
+.hero .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    margin: 0;
+    text-shadow: 0 0 5px black;
+}
+
+.links {
+    text-decoration: none;
+    color: var(--white-text-color);
+}
+
+/* Header styles - End */
+
+/* Search container styles - Start */
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    top: -35px;
+    width: 100%;
+}
+
+.search-input {
+    background-color: var(--input-background-color);
+    border: none;
+    width: 70%;
+    padding: 1em;
+}
+
+.search-btn {
+    background-color: var(--button-background-color);
+    border: none;
+    color: var(--white-text-color);
+    padding: 1em;
+    width: 30%;
+}
+
+/* Search container styles - End */
+
+/* Movie container styles - Start */
+
+.view-mode {
+    text-align: center;
+}
+
+.fa-table-cells, .fa-list {
+    display: none;
+}
+
+.movie-list {
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2em; */
+    /* This has originally a flex container but searching for Home Alone, one of the images
+       was always indented */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2em;
+    
+}
+
+.movie-grid {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-columns: repeat(auto-fit, 100px);
+    grid-template-rows: 200px;
+    grid-auto-rows: 175px;
+}
+
+.movie-grid, .movie-list {
+    padding-top: 2em;
+}
+
+.movie-header {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+.movie-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.25em;
+    /* width: 100%; */
+}
+
+.movie-card-column {
+    flex-direction: column;
+    align-items: space-between;
+    gap: 0.75em;
+}
+
+.movie-img {
+    width: 100px;
+    min-height: 150px;
+}
+
+.movie-details {
+    width: 80%;
+}
+
+.movie-title {
+    margin: 0;
+}
+
+.movie-grid-details {
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    gap: 0.5em;
+}
+
+.movie-info {
+    display: flex;
+    gap: 2em;
+}
+
+.movie-plot {
+    margin: 0;
+}
+
+.rating {
+    position: relative;
+}
+
+.add-movie,
+.remove-movie {
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    gap: 5px;
+}
+
+.add-movie a,
+.add-movie img,
+.remove-movie a,
+.remove-movie img {
+    pointer-events: none;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: max-content;
+    background-color: var(--white-text-color);
+    color: var(--body-background-color);
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 25px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.rating:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+    color: black; 
+    
+}
+
+/* Movie container styles - End */
+
+/* Modal styles - Start */
+
+dialog {
+    padding: 0.25em;
+    /* margin: 1em; */
+}
+
+.movie-modal-container {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1em;
+    padding: 1em;
+    background-color: var(--body-background-color);
+    color: var(--white-text-color);
+}
+
+.modal-row {
+    margin: 1em;
+}
+
+.label {
+    width: 100px;
+    display: inline-block;
+}
+
+.close-modal-btn-container{
+    text-align: right;
+    margin: 9px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.modal-close-btn {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--white-text-color);
+    border: 1px solid var(--white-text-color);
+    background-color: var(--body-background-color);
+}
+
+/* Modal styles - End */
+
+
+/* background: no-repeat center center fixed; 
+    background-size: cover; */

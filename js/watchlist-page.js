@@ -1,11 +1,11 @@
-import { renderSort } from './sort.js';
+import { renderSort } from './components/sort.js';
 
-export const renderMovieWatchlistPage = (route) => {
+export const renderMovieWatchlistPage = () => {
 
     return `
         ${renderSort()}
-        <section class="movie-list" id="movie-container">
+        <div id="movie-container" class="movie-container">
 
-        </section>
+        </div>
     `;
 };

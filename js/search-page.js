@@ -1,13 +1,14 @@
-import { renderSearchBar } from './search-bar.js';
-import { renderSort } from './sort.js';
+import { renderSearchBar } from './components/search-bar.js';
+import { renderSort } from './components/sort.js';
 
 export const renderSearchPage = () => {
+
     return `
         ${renderSearchBar()}
         ${renderSort()}
-        <section class="movie-list" id="movie-container">
+        <div class="movie-container" id="movie-container">
 
-        </section>
-    `
+        </div>
+    `;
 };
 

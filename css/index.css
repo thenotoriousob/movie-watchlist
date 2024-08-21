@@ -2,9 +2,13 @@
     --white-text-color: #FFFFFF;
     --button-background-color: #4B4B4B;
     --input-background-color: #2E2E2F;
+    --input-text-color: #A5A5A5;
     --body-background-color: #121212;
     --font-family: "Inter", sans-serif;
+    --no-movies-found-text-color: "#787878";
 }
+
+/* General styles - Start */
 
 *, *::after, *::before {
     box-sizing: border-box;
@@ -14,41 +18,223 @@ html, body {
     margin: 0;
     padding: 0;
     color: var(--white-text-color);
-    font-family: var(--font-family);
     background-color: var(--body-background-color);
-    height: 100vh;
+    height: 100%;
 }
+
+body,
+.search-input,
+.search-btn {
+    font-family: var(--font-family);
+}
+
+.links {
+    text-decoration: none;
+    color: var(--white-text-color);
+}
+
+.add-movie,
+.remove-movie,
+.fa-solid,
+.poster-details,
+.search-btn,
+.movie-list-blank {
+    cursor: pointer;
+}
+
+.movie-list-blank img,
+.movie-list-blank p,
+.poster-img, .poster-text {
+    pointer-events: none;
+}
+
+/* General styles - End */
+
+/* Containers, flex and grid - Start */
 
 .container {
     width: 80%;
     margin: 0 auto;
     max-width: 800px;
+    min-width: 450px;
     padding: 1em;
 }
 
-a {
+.search-container {
+    position: relative;
+    top: -35px;
+    width: 100%;
+}
+
+/* Make the hero full height and centre vertically */
+.hero,
+/* Switch the header/link from column to row */
+.hero .container,
+/* Keep the input/button touching and the same height */
+.search-container,
+/* When there are no movies, keep the text centred */
+.movie-container,
+/* Keep the items displayed when no movies centered vertically/horizontally */
+.no-movies-found,
+.movie-list-blank,
+/* Keep the title and rating on the same line and spaced evenly */
+.movie-header,
+/* Keep the add/remove icon and the text centered horizontallu */
+.add-movie,
+.remove-movie,
+/* Line up the duration, genre and add/remove */
+.movie-info,
+.poster-details {
+    display: flex;
+    align-items: center;
+}
+
+/* Line up the poster and the movie details on the same line,
+don't want it centered horizontally though (different from the design
+but I think it looks better) */
+.movie-card {
+    display: flex;
+    gap: 0.5em;
+}
+
+.movie-grid-details {
+  display: flex;
+  align-items: space-between;
+  gap: 0.5em;
+}
+
+/* On smaller screens stack the header and link on top of each other */
+.hero .container,
+.search-container,
+.movie-container,
+.no-movies-found,
+.movie-list-blank,
+.movie-card-column,
+.movie-grid-details,
+.poster-details {
+    flex-direction: column;
+}
+
+.hero .container,
+.movie-card {
+    justify-content: space-between;
+}
+
+.no-movies-found,
+.movie-list-blank,
+.search-container,
+.movie-container {
+    justify-content: center;
+}
+
+.hero .container,
+.movie-info {
+    gap: 2em;
+}
+
+.search-container,
+.movie-header {
+    gap: 0.5em;
+}
+
+.movie-container {
+    height: 100%;
+    min-height: 60svh;
+}
+
+.movie-card {
+    gap: 1.25em;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 1.5em;
+}
+
+.movie-card-column {
+    align-items: space-between;
+    gap: 0.75em;
+}
+
+.add-movie,
+.remove-movie {
+    gap: .25em;
+    padding: 0 0.5em;
+}
+
+.movie-list,
+.movie-grid,
+.movie-modal-container {
+    display: grid;
+}
+
+.movie-list {
+    /* This has originally a flex container but searching for Home Alone, one of the images
+       was always indented */
+    grid-template-columns: 1fr;
+    /* So the rows don't space out */
+    grid-template-rows: min-content;
+    /* To prevent the rows stretching to fill space */
+    align-items: start;
+    gap: 2em;
+
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2em; */
+}
+
+.movie-grid {
+    grid-gap: 2em;
+    grid-template-columns: repeat(auto-fit, 100px);
+    grid-template-rows: 275px;
+    grid-auto-rows: 175px;
+}
+
+.movie-modal-container {
+    grid-template-columns: 100px 1fr;
+    gap: 1em;
+    padding: 1em;
+    background-color: var(--body-background-color);
     color: var(--white-text-color);
 }
 
-/* main, main .container {
-    height: 100%;
+@media (min-width: 600px) {
+
+    /* On bigger screen dispay on row and space out */
+    .hero .container {
+        flex-direction: row;
+    }
+
+    .search-container {
+        flex-direction: row;
+        gap: 0;
+    }
+
 }
 
-main .container {
-    display: flex;
-    flex-direction: column;
-} */
+/* Containers, flex and grid - End */
 
 /* Typography styles - Start */
 
-h1 {
+.title {
     font-size: 2.5rem;
     font-weight: 800;
 }
 
 .fa-solid {
     font-size: 2rem;
-    cursor: pointer;
+}
+
+/* I thought this would default to 1rem but it doesn't appear to */
+.search-input,
+.search-btn,
+.modal-close-btn {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.movie-list-blank {
+    font-size: 1.125rem;
+    font-weight: 700;
 }
 
 .watchlist-link {
@@ -60,168 +246,142 @@ h1 {
     font-size: 0.75rem;
 }
 
+.poster-text {
+    font-size: 0.5rem;
+}
+
 /* Typography styles - End */
 
 /* Header styles - Start */
 
 .hero {
     background-image: url("../images/header.png");
-    background-size: cover;
+    background-size: 80%;
     background-position: 50% 24%;
-    background-size: 100%;
     min-height: 208px;
-    /* To make the container inside this full height */
-    display: flex;
-    background-color: rgb(90, 87, 87);
+    background-color: rgba(5, 5, 5, 0.8);
     background-blend-mode: darken;
 }
 
-.hero .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-h1 {
+.title {
     margin: 0;
     text-shadow: 0 0 5px black;
-}
-
-.links {
-    text-decoration: none;
-    color: var(--white-text-color);
+    opacity: 1;
 }
 
 /* Header styles - End */
 
 /* Search container styles - Start */
 
-.search-container {
-    display: flex;
-    justify-content: center;
-    position: relative;
-    top: -35px;
-    width: 100%;
-}
-
 .search-input {
     background-color: var(--input-background-color);
-    border: none;
-    width: 70%;
-    padding: 1em;
+    padding: 0.75em 1em 0.75em 2.5em;
+    /* For the search icon */
+    position: relative;
 }
 
 .search-btn {
     background-color: var(--button-background-color);
-    border: none;
+    padding: 0.75em;
+}
+
+.search-input,
+.search-btn {
     color: var(--white-text-color);
-    padding: 1em;
-    width: 30%;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+}
+
+.search-input-error {
+    border: 2px solid red;
+}
+
+.search-icon-position {
+    position: absolute;
+    top: 14px;
+    left: 8px;
+    z-index: 1;
+}
+
+@media (min-width: 600px) {
+
+    .search-input,
+    .search-btn {
+        border-radius: 6px;
+    }
+
+    .search-input {
+        width: 70%;
+        border-radius: 6px 0px 0px 6px;
+    }
+
+    .search-btn {
+        width: 30%;
+        border-radius: 0px 6px 6px 0px;
+    }
+
 }
 
 /* Search container styles - End */
 
 /* Movie container styles - Start */
 
-.view-mode {
-    text-align: center;
-}
-
+/* Hide the list/grid icons until there are movies displayed */
 .fa-table-cells, .fa-list {
     display: none;
 }
 
-.movie-list {
-    /* display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2em; */
-    /* This has originally a flex container but searching for Home Alone, one of the images
-       was always indented */
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2em;
-    
+/* Centre them */
+.view-mode {
+    text-align: center;
 }
-
-.movie-grid {
-    display: grid;
-    grid-gap: 1em;
-    grid-template-columns: repeat(auto-fit, 100px);
-    grid-template-rows: 200px;
-    grid-auto-rows: 175px;
+/* When the user has no movies in their list */
+.movie-list-blank {
+    color: var(--input-background-color);
+}
+/* When there are no search results found */
+.no-movies-found {
+    color: var(--no-movies-found-text-color);
 }
 
 .movie-grid, .movie-list {
     padding-top: 2em;
 }
 
-.movie-header {
-    display: flex;
-    align-items: center;
-    gap: 1em;
+.movie-grid .movie-card {
+    border-bottom: 0;
 }
 
-.movie-card {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.25em;
-    /* width: 100%; */
+/* When in grid mode remove the padding so they line up with the text,
+  the padding is only need when in list mode */
+.movie-grid .add-movie, 
+.movie-grid .remove-movie {
+    padding: 0;
 }
 
-.movie-card-column {
-    flex-direction: column;
-    align-items: space-between;
-    gap: 0.75em;
-}
-
-.movie-img {
+.poster-img {
     width: 100px;
-    min-height: 150px;
+    /* Some images were longer or shorter so fixed them to be the same height */
+    height: 150px;
 }
-
+/* This was needed for flims where the plot text wasn't very long, so a bigger
+  gap appeared between the poster and the details */
 .movie-details {
-    width: 80%;
+    flex-grow: 1;
 }
-
+/* Take the margin off the title to reduce the gap between the next item */
 .movie-title {
     margin: 0;
 }
-
-.movie-grid-details {
-    display: flex;
-    flex-direction: column;
-    align-items: space-between;
-    gap: 0.5em;
-}
-
-.movie-info {
-    display: flex;
-    gap: 2em;
-}
-
+/* Same as above */
 .movie-plot {
     margin: 0;
 }
 
+/* This is for the tooltip */
 .rating {
     position: relative;
-}
-
-.add-movie,
-.remove-movie {
-    display: flex;
-    /* justify-content: center; */
-    align-items: center;
-    gap: 5px;
-}
-
-.add-movie a,
-.add-movie img,
-.remove-movie a,
-.remove-movie img {
-    pointer-events: none;
 }
 
 .tooltip {
@@ -231,7 +391,7 @@ h1 {
     color: var(--body-background-color);
     text-align: center;
     border-radius: 6px;
-    padding: 5px;
+    padding: 1em;
     position: absolute;
     z-index: 1;
     top: 0;
@@ -241,7 +401,8 @@ h1 {
     pointer-events: none;
 }
 
-.rating:hover .tooltip {
+.rating:hover .tooltip,
+.rating:focus .tooltip {
     visibility: visible;
     opacity: 1;
     color: black; 
@@ -254,16 +415,6 @@ h1 {
 
 dialog {
     padding: 0.25em;
-    /* margin: 1em; */
-}
-
-.movie-modal-container {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 1em;
-    padding: 1em;
-    background-color: var(--body-background-color);
-    color: var(--white-text-color);
 }
 
 .modal-row {
@@ -277,22 +428,16 @@ dialog {
 
 .close-modal-btn-container{
     text-align: right;
-    margin: 9px;
+    margin: 0.5em;
     position: absolute;
     top: 5px;
     right: 5px;
 }
 
 .modal-close-btn {
-    font-size: 1rem;
-    font-weight: bold;
     color: var(--white-text-color);
     border: 1px solid var(--white-text-color);
     background-color: var(--body-background-color);
 }
 
 /* Modal styles - End */
-
-
-/* background: no-repeat center center fixed; 
-    background-size: cover; */

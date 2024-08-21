@@ -1,16 +1,10 @@
-import { createMovieCard } from './movie-card.js';
-import { createMovieModal } from './modal-dets.js';
+import { renderMovies } from './components/movies.js';
+import { createMovieModal } from './components/modal-dets.js';
+import { Page } from './components/page.js';
 import { renderSearchPage } from './search-page.js';
 import { renderMovieWatchlistPage } from './watchlist-page.js';
-import { renderHeader } from './header.js';
-import { movieData } from './data.js';
 
 const movieWatchlistFromLocalStorage = JSON.parse( localStorage.getItem("movieWatchlist"));
-const header = document.querySelector("#header");
-const main = document.querySelector('#main');
-
-let listView = true;
-
 const routes = {
     '/': new Page('Find your film', 'movielist', 'My Watchlist', renderSearchPage),
     '/movielist': new Page('My Watchlist', '', 'Search for movies', renderMovieWatchlistPage)
@@ -18,110 +12,54 @@ const routes = {
 const home = routes['/'];
 const movieWatchlist = routes['/movielist'];
 
-function Page(title, path, label, contentFunction) {
-    this.title = title
-    this.linkPath = path
-    this.linkLabel  = label
-    this.header = renderHeader(this)
-    this.content = contentFunction()
-    this.movies = []
-    this.addMovie = function(movie) {
-        // addMovieDets is going to be an array, so don't want to push an array onto an array
-        // The spread merges addMovieDets into the array
-        this.movies.push(...movie)
-    }
-    this.removeMovie = function(movieId) {
-      this.movies.splice(this.movies.map(movie => movie.imdbID).indexOf(movieId),1);
-    }
-    this.clearMovies = function() {
-      this.movies.length = 0;
-    }
-}
+let listView = true;
 
 if (movieWatchlistFromLocalStorage) {
     movieWatchlist.addMovie(movieWatchlistFromLocalStorage);
-}
-
-document.addEventListener("click", e => {
-
-    e.preventDefault();
-
-    if (e.target.matches(".links")) {
-        const { href } = e.target;
-        history.pushState({}, "", href);
-        navigate(e);
-    }
-    else if (e.target.matches(".fa-table-cells")) {
-        listView = false;
-        renderMovies();
-    }
-    else if(e.target.matches(".fa-list")) {
-        listView = true;
-        renderMovies();
-    }
-    else if(e.target.matches(".movie-img")) {
-        renderMovieModal(e);
-    }
-    else if(e.target.matches(".modal-close-btn")) {
-        document.querySelector("dialog").close();
-    }
-    else if(e.target.matches(".search-btn")) {
-        searchMovies();
-    }
-    else if(e.target.matches(".add-movie")) {
-        saveMovie(e);
-    }
-    else if(e.target.matches(".remove-movie")) {
-        removeMovie(e.target.dataset.movieId);
-    }
-});
-
-function renderMovieModal(e) {
-    const html = createMovieModal(movieWatchlist.movies.filter(movie => movie.imdbID === e.target.parentElement.dataset.movieDetails)[0]);
-    const modalEl = document.getElementById("modal");
-
-    modalEl.innerHTML = html;
-
-    document.querySelector("dialog").showModal();
 };
 
 async function searchMovies() {
 
-    const searchCriteria = document.querySelector(".search-input").value;
+    const inputEl = document.querySelector(".search-input");
+
+    if (inputEl.value === "") {
+        inputEl.classList.add("search-input-error");
+        return;
+    };
+
+    inputEl.classList.remove("search-input-error");
 
     try {
         home.clearMovies();
-        // const resp = await fetch("http://www.omdbapi.com/?apikey=69effa7b&s='Home Alone'");
+        const resp = await fetch(`https://www.omdbapi.com/?apikey=69effa7b&s='${inputEl.value}'`);
 
-        // if (!resp.ok) {
-        //     throw new Error("failed");
-        // }
+        if (!resp.ok) {
+            throw new Error("failed");
+        };
 
-        // const data = await resp.json();
+        const data = await resp.json();
 
-        // searchedMovies = await getAdditionalMovieDetails(data.Search);
+        if(data.Response === "True") {
+            const searchedMovies = await getAdditionalMovieDetails(data.Search);
 
-        // routes[location.pathname].addMovie(...await getAdditionalMovieDetails(movieData));
+            home.addMovie(searchedMovies);
+        };
 
-        const searchedMovies = await getAdditionalMovieDetails(movieData);
-
-        home.addMovie(searchedMovies);
-
-        renderMovies();
+        displayMovies(true);
 
     }
 
     catch(error) {
         console.error(error);
-    }
+    };
 
-}
+};
 
 async function getAdditionalMovieDetails(movieArray) {
 
     return await Promise.all(movieArray.map(async (movie) => {
 
-        const resp = await fetch(`http://www.omdbapi.com/?apikey=69effa7b&i=${movie.imdbID}`);
+        const resp = await fetch(`https://www.omdbapi.com/?apikey=69effa7b&i=${movie.imdbID}`);
 
         const movieDetails = await resp.json();
 
@@ -129,57 +67,33 @@ async function getAdditionalMovieDetails(movieArray) {
 
     }));
 
-}
+};
 
-function renderMovies() {
+// Just a helper function to make the code a bit DRYer  
+function displayMovies(searched = false) {
+    renderMovies(routes[location.pathname].movies, movieWatchlist, listView, searched);
+};
 
-    const moviesArr = routes[location.pathname].movies;
+function renderMovieModal(e) {
 
-    if(moviesArr.length === 0) {
-        return;
-    }
+    document.getElementById("modal").innerHTML =
+        createMovieModal(routes[location.pathname].movies.filter(movie => movie.imdbID === e.target.parentElement.dataset.movieDetails)[0]);
 
-    const movieContainerEl = document.getElementById("movie-container");
+    document.querySelector("dialog").showModal();
+};
 
-    let html = "";
+async function saveMovie(movieId) {
 
-    moviesArr.forEach(movieDetails => {
-        html +=  `
-            ${createMovieCard(movieDetails, listView, movieWatchlist.movies.find(movie => movie.imdbID === movieDetails.imdbID) ? "remove" : "add")}
-        `;
-    });
-
-    movieContainerEl.innerHTML = html;
-
-    renderMovieView();
-}
-
-function renderMovieView() {
-
-    const movieContainerEl = document.getElementById("movie-container");
-    const listIconEl = document.querySelector(".fa-list");
-    const gridIconEl = document.querySelector(".fa-table-cells");
-    const listClass= "movie-list";
-    const gridClass = "movie-grid";
-
-    movieContainerEl.classList.add(listView ? listClass : gridClass);
-    movieContainerEl.classList.remove(!listView ? listClass : gridClass);
-    listIconEl.style.display = listView ? "none" : "inline";
-    gridIconEl.style.display = !listView ? "none" : "inline";
-
-}
-
-async function saveMovie(e) {
-
-    const addMovieDets = await getAdditionalMovieDetails([{imdbID: e.target.dataset.movieId}]);
+    // Store the full movie object so we don't need to keep calling the api
+    const addMovieDets = await getAdditionalMovieDetails([{imdbID: movieId}]);
 
     movieWatchlist.addMovie(addMovieDets);
 
     localStorage.setItem("movieWatchlist", JSON.stringify(movieWatchlist.movies));
 
-    renderMovies();
+    displayMovies();
 
-}
+};
 
 function removeMovie(movieId) {
 
@@ -187,15 +101,20 @@ function removeMovie(movieId) {
 
     localStorage.setItem("movieWatchlist", JSON.stringify(movieWatchlist.movies));
 
-    renderMovies();
-}
+    displayMovies();
+};
 
-const renderContent = async route => {
+// ROUTER - Start
+const renderContent = route => {
+
+    const header = document.querySelector("#header");
+    const main = document.querySelector('#main');
+
     header.innerHTML = routes[route].header;
     main.innerHTML = routes[route].content;
 
-    renderMovies(routes[route].movies);
-}
+    displayMovies();
+};
 
 const registerBrowserBackAndForth = () => {
     window.onpopstate = function (e) {
@@ -214,3 +133,68 @@ const navigate = e => {
     registerBrowserBackAndForth();
     renderContent(location.pathname);
 })();
+
+// ROUTER - End
+
+// EVENT LISTENERS - Start
+document.addEventListener("click", e => {
+
+  e.preventDefault();
+  
+  if(e.target.dataset.addMovieId) {
+      saveMovie(e.target.dataset.addMovieId);
+  }
+  else if(e.target.dataset.removeMovieId) {
+      removeMovie(e.target.dataset.removeMovieId);
+  }
+  else if (e.target.matches(".links")) {
+      const { href } = e.target;
+      history.pushState({}, "", href);
+      navigate(e);
+  }
+  else if (e.target.matches(".fa-table-cells")) {
+      listView = false;
+      displayMovies();
+  }
+  else if(e.target.matches(".fa-list")) {
+      listView = true;
+      displayMovies();
+  }
+  else if(e.target.matches(".poster-details")) {
+      renderMovieModal(e);
+  }
+  else if(e.target.matches(".modal-close-btn")) {
+      document.querySelector("dialog").close();
+  }
+  else if(e.target.matches(".search-btn")) {
+      searchMovies();
+  }
+  else if(e.target.matches(".movie-list-blank")) {
+      document.querySelector(".search-input").focus();
+  };
+
+});
+
+// Some events need a keypress to fire from the keyboard
+document.addEventListener("keypress", e => {
+
+  if (e.key === "Enter") {
+      if (e.target.matches(".fa-table-cells")) {
+          listView = false;
+          displayMovies();
+      }
+      else if(e.target.matches(".fa-list")) {
+          listView = true;
+          displayMovies();
+      }
+      else if(e.target.matches(".poster-details")) {
+          renderMovieModal(e);
+      }
+      else if(e.target.matches(".movie-list-blank")) {
+          document.querySelector(".search-input").focus();
+      };
+  }; 
+
+});
+
+// EVENT LISTENERS - End
